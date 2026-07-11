@@ -3,7 +3,7 @@
 // Limite honnete des PWA : l'ecran doit rester ALLUME pendant la course (wake lock actif) ;
 // telephone verrouille = GPS coupe par Android. Brassard ou poche ecran actif conseille.
 import { getState, recordRun } from "./store.js";
-import { formatPace, paceToKmh, KIND_LABELS, STRETCHES } from "./running.js";
+import { formatPace, paceToKmh, KIND_LABELS, STRETCHES, WARMUP_RUN } from "./running.js";
 import { app, esc, toast, panel, navTo, setHeader, showSystemEvents } from "./ui.js";
 import { computeNeeds } from "./nutrition.js";
 
@@ -69,7 +69,16 @@ export function renderRunLive(workout = null, planWeek = null, planDay = null) {
     <div class="row mt12" style="padding:4px 0"><span class="dim" style="font-size:12px"><i class="ti ti-volume"></i> Coach vocal</span>
       <button class="chip ${voiceOn ? "on" : ""}" id="rl-voice">${voiceOn ? "ACTIVE" : "COUPE"}</button></div>
     <div class="hint faint mt8"><i class="ti ti-alert-triangle"></i> L'ecran doit rester allume pendant la course (le GPS se coupe si le telephone est verrouille). Mets la luminosite au minimum.</div>
-  `);
+  `) + `<div id="rl-warmup">${panel(`
+    <div class="section-label"><i class="ti ti-flame"></i> ECHAUFFEMENT AVANT DE PARTIR (~5 MIN)</div>
+    <div class="hint mb8">Muscles et articulations prets = allure plus fluide et moins de blessures. Fais-le pendant que le GPS accroche.</div>
+    ${WARMUP_RUN.map(w => `
+      <div style="padding:8px 0;border-bottom:1px solid var(--line)">
+        <div class="row"><span class="white" style="font-size:13px">${esc(w.name)}</span><span class="faint" style="font-size:11px">${esc(w.dose)}</span></div>
+        <figure class="exo-figure"><img loading="lazy" alt="${esc(w.name)}" src="${w.img}" onerror="this.closest('.exo-figure').remove()" /></figure>
+        <div class="hint faint">${esc(w.cue)}</div>
+      </div>`).join("")}
+  `)}</div>`;
 
   const positions = [];      // { lat, lon, t }
   let totalKm = 0;
@@ -153,6 +162,7 @@ export function renderRunLive(workout = null, planWeek = null, planDay = null) {
       tickInt = setInterval(() => { elapsed++; el("rl-clock").textContent = fmtClock(elapsed); }, 1000);
       el("rl-toggle").innerHTML = '<i class="ti ti-player-pause"></i> PAUSE';
       el("rl-stop").disabled = false;
+      const wu = el("rl-warmup"); if (wu) wu.style.display = "none"; // echauffement fait, on degage l'ecran
     } else {
       running = false;
       clearInterval(tickInt);
@@ -199,6 +209,7 @@ export function renderRunFinish(result, distanceKm, durationMin) {
   const stretchRows = STRETCHES.map(st => `
     <div style="padding:7px 0;border-bottom:1px solid var(--line)">
       <div class="row"><span class="white" style="font-size:13px">${esc(st.name)}</span><span class="faint" style="font-size:11px">${st.sec}s</span></div>
+      <figure class="exo-figure"><img loading="lazy" alt="${esc(st.name)}" src="${st.img}" onerror="this.closest('.exo-figure').remove()" /></figure>
       <div class="hint faint">${esc(st.cue)}</div>
     </div>`).join("");
 

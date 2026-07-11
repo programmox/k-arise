@@ -59,6 +59,8 @@ function recoveryPanel() {
   const rows = STRETCHES.map(st => `
     <div style="padding:6px 0;border-bottom:1px solid var(--line)">
       <div class="row"><span class="dim" style="font-size:12px">${esc(st.name)}</span><span class="faint" style="font-size:11px">${st.sec}s</span></div>
+      <figure class="exo-figure"><img loading="lazy" alt="${esc(st.name)}" src="${st.img}" onerror="this.closest('.exo-figure').remove()" /></figure>
+      <div class="hint faint">${esc(st.cue)}</div>
     </div>`).join("");
   return panel(`
     <div class="section-label"><i class="ti ti-stretching"></i> ETIREMENTS POST-COURSE (5 MIN)</div>

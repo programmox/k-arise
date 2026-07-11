@@ -27,13 +27,23 @@ export function paceToKmh(minKm) {
   return (Math.round((60 / minKm) * 10) / 10) + " km/h";
 }
 
+// Echauffement dynamique pre-course (~5 min). Visuels animes locaux (assets/exo/wu-*.webp).
+export const WARMUP_RUN = [
+  { name: "Rotations de chevilles", dose: "20s par cote", cue: "Pointe au sol, dessine des cercles amples dans les deux sens.", img: "assets/exo/wu-chevilles.webp" },
+  { name: "Cercles de hanches", dose: "10 par sens", cue: "Mains sur les hanches, cercles larges et controles.", img: "assets/exo/wu-hanches.webp" },
+  { name: "Cercles de bras", dose: "15s", cue: "Bras tendus, cercles avant puis arriere, epaules relachees.", img: "assets/exo/wu-bras.webp" },
+  { name: "Fentes marchees", dose: "10 pas", cue: "Grand pas, genou arriere vers le sol, buste droit.", img: "assets/exo/wu-fentes.webp" },
+  { name: "Montees de genoux (skipping)", dose: "30s", cue: "Genoux hauts, rythme vif, reste leger sur l'avant-pied.", img: "assets/exo/wu-skipping.webp" },
+  { name: "Talons-fesses", dose: "30s", cue: "Talons qui claquent vers les fesses, cadence rapide, buste droit.", img: "assets/exo/wu-talons-fesses.webp" }
+];
+
 // Etirements post-course (recuperation). Meme logique que les consignes muscu : local, systematique.
 export const STRETCHES = [
-  { name: "Quadriceps debout", sec: 30, cue: "Talon vers la fesse, genoux serres, bassin neutre. 30s par jambe." },
-  { name: "Ischio-jambiers", sec: 30, cue: "Jambe tendue sur un support bas, dos droit, penche-toi depuis la hanche." },
-  { name: "Mollets contre un mur", sec: 30, cue: "Jambe arriere tendue, talon au sol, pousse le mur. 30s par jambe." },
-  { name: "Psoas (fente basse)", sec: 30, cue: "Genou arriere au sol, pousse le bassin vers l'avant, buste droit." },
-  { name: "Fessiers (chiffre 4)", sec: 30, cue: "Allonge, cheville sur le genou oppose, tire la cuisse vers toi." }
+  { name: "Quadriceps debout", sec: 30, cue: "Talon vers la fesse, genoux serres, bassin neutre. 30s par jambe.", img: "assets/exo/st-quadriceps.webp" },
+  { name: "Ischio-jambiers", sec: 30, cue: "Jambe tendue sur un support bas, dos droit, penche-toi depuis la hanche.", img: "assets/exo/st-ischios.webp" },
+  { name: "Mollets contre un mur", sec: 30, cue: "Jambe arriere tendue, talon au sol, pousse le mur. 30s par jambe.", img: "assets/exo/st-mollets.webp" },
+  { name: "Psoas (fente basse)", sec: 30, cue: "Genou arriere au sol, pousse le bassin vers l'avant, buste droit.", img: "assets/exo/st-psoas.webp" },
+  { name: "Fessiers (chiffre 4)", sec: 30, cue: "Allonge, cheville sur le genou oppose, tire la cuisse vers toi.", img: "assets/exo/st-fessiers.webp" }
 ];
 
 export function paceOf(entry) {
