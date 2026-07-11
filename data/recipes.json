@@ -1,0 +1,171 @@
+{
+  "meta": {
+    "version": 1,
+    "note": "Recettes post-effort orientees recuperation et prise de muscle (omnivore, haute teneur en proteines). Macros approximatives par portion, pour guidage. ingredients = cles de l'inventaire cuisine.",
+    "science": "Cibles basees sur le consensus ISSN : proteines 1.4-2.0 g/kg/j (haut de fourchette pour la prise de muscle), dose post-effort 0.25-0.4 g/kg, glucides pour reconstituer le glycogene. Le total journalier prime sur le timing exact."
+  },
+  "recipes": [
+    {
+      "id": "bol-poulet-riz-brocoli",
+      "name": "Bol poulet, riz, brocoli",
+      "kcal": 620, "protein": 50, "carbs": 65, "fat": 14, "prepMin": 20,
+      "ingredients": ["poulet", "riz", "brocoli", "huile-olive"],
+      "tags": ["post-effort", "rassasiant"],
+      "steps": ["Cuis le riz. Poele le poulet en des avec un filet d'huile.", "Vapeur le brocoli 6-8 min.", "Assemble, sel/poivre."],
+      "tip": "Combo proteines + glucides ideal juste apres la seance pour relancer la synthese musculaire."
+    },
+    {
+      "id": "omelette-fromage-pain",
+      "name": "Omelette 4 oeufs, fromage, pain complet",
+      "kcal": 520, "protein": 34, "carbs": 30, "fat": 28, "prepMin": 10,
+      "ingredients": ["oeufs", "fromage", "pain-complet", "huile-olive"],
+      "tags": ["rapide", "post-effort"],
+      "steps": ["Bats 4 oeufs, cuis a la poele avec un peu d'huile.", "Ajoute le fromage, plie.", "Sers avec le pain complet."],
+      "tip": "Les oeufs sont une proteine complete de reference (riche en leucine, declencheur de l'anabolisme)."
+    },
+    {
+      "id": "pates-thon-tomate",
+      "name": "Pates thon-tomate",
+      "kcal": 600, "protein": 40, "carbs": 80, "fat": 12, "prepMin": 15,
+      "ingredients": ["pates", "thon", "tomate", "huile-olive"],
+      "tags": ["rapide", "glucides+"],
+      "steps": ["Cuis les pates.", "Chauffe la tomate avec le thon egoutte et un filet d'huile.", "Melange."],
+      "tip": "Beaucoup de glucides : parfait si la seance etait longue ou cardio (recharge du glycogene)."
+    },
+    {
+      "id": "bowl-fromage-blanc-avoine",
+      "name": "Bowl fromage blanc, avoine, banane, cacahuete",
+      "kcal": 480, "protein": 38, "carbs": 55, "fat": 12, "prepMin": 5,
+      "ingredients": ["fromage-blanc", "flocons-avoine", "banane", "beurre-cacahuete", "miel"],
+      "tags": ["rapide", "sans-cuisson", "post-effort"],
+      "steps": ["Melange le fromage blanc et les flocons d'avoine.", "Ajoute la banane en rondelles, le beurre de cacahuete et un filet de miel."],
+      "tip": "Caseine (fromage blanc) a digestion lente : bon pour nourrir le muscle sur la duree, ideal le soir."
+    },
+    {
+      "id": "saumon-patate-douce-epinards",
+      "name": "Saumon, patate douce, epinards",
+      "kcal": 580, "protein": 42, "carbs": 45, "fat": 24, "prepMin": 25,
+      "ingredients": ["saumon", "patate-douce", "epinards", "huile-olive"],
+      "tags": ["complet", "omega-3"],
+      "steps": ["Roti la patate douce en des au four 20 min.", "Poele le saumon 4 min par face.", "Fais tomber les epinards a la poele."],
+      "tip": "Les omega-3 du saumon aident a reduire l'inflammation post-effort et la recuperation."
+    },
+    {
+      "id": "chili-boeuf-riz-haricots",
+      "name": "Boeuf hache, riz, haricots rouges",
+      "kcal": 650, "protein": 45, "carbs": 60, "fat": 22, "prepMin": 25,
+      "ingredients": ["boeuf-hache", "riz", "haricots-rouges", "tomate"],
+      "tags": ["rassasiant", "fer"],
+      "steps": ["Cuis le riz.", "Fais revenir le boeuf, ajoute tomate et haricots.", "Mijote 10 min, sers sur le riz."],
+      "tip": "Riche en proteines, fer et glucides : repas de recup costaud apres une grosse seance."
+    },
+    {
+      "id": "wrap-poulet-avocat",
+      "name": "Wrap poulet-avocat",
+      "kcal": 560, "protein": 40, "carbs": 45, "fat": 22, "prepMin": 12,
+      "ingredients": ["poulet", "pain-complet", "avocat", "tomate"],
+      "tags": ["rapide", "nomade"],
+      "steps": ["Poele le poulet en lamelles.", "Garnis le pain avec avocat ecrase, tomate et poulet."],
+      "tip": "Bon gras (avocat) + proteines : rassasiant et transportable au boulot."
+    },
+    {
+      "id": "shake-whey-avoine",
+      "name": "Shake whey, banane, avoine, cacahuete",
+      "kcal": 520, "protein": 45, "carbs": 55, "fat": 14, "prepMin": 3,
+      "ingredients": ["whey", "banane", "lait", "flocons-avoine", "beurre-cacahuete"],
+      "tags": ["rapide", "sans-cuisson", "post-effort"],
+      "steps": ["Mixe le tout avec le lait jusqu'a consistance lisse."],
+      "tip": "La solution la plus rapide pour atteindre la dose proteique post-effort quand tu n'as pas le temps de cuisiner."
+    },
+    {
+      "id": "yaourt-grec-noix-banane",
+      "name": "Yaourt grec, miel, noix, banane",
+      "kcal": 420, "protein": 28, "carbs": 45, "fat": 16, "prepMin": 3,
+      "ingredients": ["yaourt-grec", "miel", "noix", "banane"],
+      "tags": ["rapide", "sans-cuisson", "collation"],
+      "steps": ["Verse le yaourt, ajoute banane, noix et miel."],
+      "tip": "Collation proteinee parfaite entre deux repas pour lisser ton apport sur la journee."
+    },
+    {
+      "id": "quinoa-pois-chiches",
+      "name": "Quinoa, pois chiches, legumes",
+      "kcal": 540, "protein": 26, "carbs": 70, "fat": 16, "prepMin": 25,
+      "ingredients": ["quinoa", "pois-chiches", "epinards", "tomate", "huile-olive"],
+      "tags": ["vegetarien", "fibres"],
+      "steps": ["Cuis le quinoa.", "Rechauffe pois chiches, epinards et tomate a la poele.", "Melange avec un filet d'huile."],
+      "tip": "Quinoa + pois chiches = proteines vegetales completes, bonne option si pas de viande sous la main."
+    },
+    {
+      "id": "oeufs-brouilles-patate-avocat",
+      "name": "Oeufs brouilles, patate douce, avocat",
+      "kcal": 540, "protein": 28, "carbs": 40, "fat": 28, "prepMin": 15,
+      "ingredients": ["oeufs", "patate-douce", "avocat", "huile-olive"],
+      "tags": ["post-effort", "rassasiant"],
+      "steps": ["Roti la patate douce en des.", "Brouille 3-4 oeufs.", "Sers avec l'avocat tranche."],
+      "tip": "Glucides a index modere (patate douce) pour une energie stable apres l'effort."
+    },
+    {
+      "id": "lentilles-riz-oeuf",
+      "name": "Lentilles, riz, oeuf",
+      "kcal": 560, "protein": 30, "carbs": 75, "fat": 12, "prepMin": 30,
+      "ingredients": ["lentilles", "riz", "oeufs"],
+      "tags": ["economique", "fibres"],
+      "steps": ["Cuis lentilles et riz.", "Ajoute un ou deux oeufs au plat ou durs.", "Assaisonne."],
+      "tip": "Riz + lentilles forment une proteine complete, et l'oeuf booste la qualite proteique du plat."
+    },
+    {
+      "id": "toast-thon",
+      "name": "Toast au thon",
+      "kcal": 340, "protein": 28, "carbs": 32, "fat": 10, "prepMin": 5,
+      "ingredients": ["thon", "pain-complet", "huile-olive"],
+      "tags": ["rapide", "sans-cuisson", "minimal"],
+      "steps": ["Egoutte le thon, ecrase-le avec un filet d'huile, sel/poivre.", "Etale sur le pain complet grille."],
+      "tip": "Depannage proteine + glucides quand le frigo est presque vide. Ajoute tomate ou avocat si tu en as."
+    },
+    {
+      "id": "riz-thon",
+      "name": "Riz au thon",
+      "kcal": 480, "protein": 32, "carbs": 70, "fat": 8, "prepMin": 15,
+      "ingredients": ["riz", "thon", "huile-olive"],
+      "tags": ["rapide", "glucides+", "minimal"],
+      "steps": ["Cuis le riz.", "Melange le thon egoutte avec un filet d'huile, sel/poivre."],
+      "tip": "Beaucoup de glucides pour recharger le glycogene, avec une proteine maigre. Une tomate ou des epinards completent bien."
+    },
+    {
+      "id": "avocado-toast-oeuf",
+      "name": "Avocado toast, oeuf",
+      "kcal": 420, "protein": 20, "carbs": 30, "fat": 24, "prepMin": 8,
+      "ingredients": ["pain-complet", "avocat", "oeufs"],
+      "tags": ["rapide", "minimal"],
+      "steps": ["Ecrase l'avocat sur le pain grille, sel/poivre.", "Pose un oeuf au plat ou poche par-dessus."],
+      "tip": "Bon gras + proteine complete. Simple et rassasiant pour un petit-dej ou une collation post-effort legere."
+    },
+    {
+      "id": "omelette-nature",
+      "name": "Omelette nature",
+      "kcal": 300, "protein": 24, "carbs": 2, "fat": 22, "prepMin": 6,
+      "ingredients": ["oeufs", "huile-olive"],
+      "tags": ["rapide", "minimal", "post-effort"],
+      "steps": ["Bats 3-4 oeufs, sel/poivre.", "Cuis a la poele avec un peu d'huile."],
+      "tip": "La base proteique la plus accessible. Ajoute fromage, epinards ou pain selon ce que tu as."
+    },
+    {
+      "id": "fromage-blanc-banane",
+      "name": "Fromage blanc, banane, miel",
+      "kcal": 300, "protein": 24, "carbs": 40, "fat": 3, "prepMin": 3,
+      "ingredients": ["fromage-blanc", "banane", "miel"],
+      "tags": ["rapide", "sans-cuisson", "minimal", "collation"],
+      "steps": ["Verse le fromage blanc, ajoute la banane en rondelles et un filet de miel."],
+      "tip": "Caseine a digestion lente : nourrit le muscle sur la duree. Ajoute noix ou avoine si tu en as."
+    },
+    {
+      "id": "banane-cacahuete",
+      "name": "Banane, beurre de cacahuete",
+      "kcal": 280, "protein": 9, "carbs": 35, "fat": 14, "prepMin": 2,
+      "ingredients": ["banane", "beurre-cacahuete"],
+      "tags": ["rapide", "sans-cuisson", "minimal", "collation"],
+      "steps": ["Tranche la banane, tartine ou trempe dans le beurre de cacahuete."],
+      "tip": "Collation energie d'avant ou apres seance. Pauvre en proteines : a completer dans la journee."
+    }
+  ]
+}

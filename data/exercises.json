@@ -1,0 +1,571 @@
+{
+  "meta": {
+    "version": 1,
+    "note": "Base d'exercices K-Arise. Chaque exo porte ses metadonnees pour le moteur de seance. videoQuery construit un lien de recherche YouTube robuste (jamais de lien mort). THENX priorise pour le poids du corps.",
+    "muscleGroups": ["abdos", "obliques", "dos", "lombaires", "epaules", "pectoraux", "bras", "jambes", "fessiers", "mollets", "mobilite-genou", "mobilite-hanche", "cardio"],
+    "equipmentKeys": ["kettlebell", "elastique", "poignees", "barre-traction"]
+  },
+  "exercises": [
+    {
+      "id": "hollow-hold",
+      "name": "Hollow Hold",
+      "category": "core",
+      "muscles": ["abdos", "core"],
+      "primaryMuscle": "abdos",
+      "equipment": [],
+      "type": "isometric",
+      "level": 1,
+      "efficacy": 9,
+      "defaultWork": 30,
+      "rest": 30,
+      "videoQuery": "hollow hold thenx",
+      "cues": [
+        "Bas du dos plaque au sol, aucun espace en dessous.",
+        "Epaules et omoplates decollees, regard vers les genoux.",
+        "Respire de facon continue, ne bloque pas l'air."
+      ],
+      "safety": "Si le bas du dos se cambre ou tire, plie les genoux pour raccourcir le levier."
+    },
+    {
+      "id": "dead-bug",
+      "name": "Dead Bug",
+      "category": "core",
+      "muscles": ["abdos", "core", "lombaires"],
+      "primaryMuscle": "abdos",
+      "equipment": [],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 8,
+      "defaultReps": 12,
+      "tempo": "controle, 2s par cote",
+      "rest": 30,
+      "videoQuery": "dead bug exercise core",
+      "cues": [
+        "Lombaires colles au sol pendant tout le mouvement.",
+        "Bras et jambe oppposes descendent lentement, sans toucher le sol.",
+        "Expire en tendant, inspire en revenant."
+      ],
+      "safety": "Excellent pour proteger le dos. Reduis l'amplitude si tu sens les lombaires se decoller."
+    },
+    {
+      "id": "plank",
+      "name": "Gainage planche",
+      "category": "core",
+      "muscles": ["abdos", "core", "epaules"],
+      "primaryMuscle": "core",
+      "equipment": [],
+      "type": "isometric",
+      "level": 1,
+      "efficacy": 8,
+      "defaultWork": 40,
+      "rest": 30,
+      "videoQuery": "perfect plank form thenx",
+      "cues": [
+        "Corps en ligne droite des talons a la tete.",
+        "Serre les fessiers et rentre le nombril, pas de creux lombaire.",
+        "Epaules au-dessus des coudes, pousse le sol."
+      ],
+      "safety": "Si les hanches s'affaissent ou que le bas du dos tire, pose les genoux."
+    },
+    {
+      "id": "side-plank",
+      "name": "Gainage lateral",
+      "category": "core",
+      "muscles": ["obliques", "core"],
+      "primaryMuscle": "obliques",
+      "equipment": [],
+      "type": "isometric",
+      "level": 2,
+      "efficacy": 8,
+      "defaultWork": 30,
+      "rest": 25,
+      "videoQuery": "side plank form",
+      "cues": [
+        "Coude sous l'epaule, corps en ligne.",
+        "Hanche bien haute, ne laisse pas le bassin tomber.",
+        "Change de cote a chaque serie."
+      ],
+      "safety": "Pose le genou inferieur au sol pour une version plus accessible."
+    },
+    {
+      "id": "hanging-knee-raise",
+      "name": "Releve de genoux suspendu",
+      "category": "core",
+      "muscles": ["abdos", "obliques"],
+      "primaryMuscle": "abdos",
+      "equipment": ["barre-traction"],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 9,
+      "defaultReps": 12,
+      "tempo": "monte 1s, descends 2s",
+      "rest": 45,
+      "videoQuery": "hanging knee raises thenx",
+      "cues": [
+        "Demarre suspendu, epaules actives (pas tout relache).",
+        "Enroule le bassin vers le haut, ce ne sont pas les hanches qui montent mais les abdos qui enroulent.",
+        "Controle la descente, evite de te balancer."
+      ],
+      "safety": "Si tu te balances, fais une pause en bas a chaque rep. Stop si douleur a l'epaule."
+    },
+    {
+      "id": "kb-russian-twist",
+      "name": "Russian Twist Kettlebell",
+      "category": "core",
+      "muscles": ["obliques", "abdos"],
+      "primaryMuscle": "obliques",
+      "equipment": ["kettlebell"],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 7,
+      "defaultReps": 16,
+      "tempo": "controle",
+      "rest": 40,
+      "videoQuery": "kettlebell russian twist form",
+      "cues": [
+        "Dos droit, poitrine ouverte, ne t'arrondis pas.",
+        "Rotation depuis le tronc, pas seulement les bras.",
+        "Touche au sol de chaque cote sans a-coups."
+      ],
+      "safety": "Garde le dos plat. Si tu sens les lombaires forcer, garde les pieds au sol et reduis l'amplitude."
+    },
+    {
+      "id": "ab-wheel",
+      "name": "Rollout (abdos)",
+      "category": "core",
+      "muscles": ["abdos", "core", "lombaires"],
+      "primaryMuscle": "abdos",
+      "equipment": ["poignees"],
+      "type": "reps",
+      "level": 3,
+      "efficacy": 9,
+      "defaultReps": 8,
+      "tempo": "descente lente 3s",
+      "rest": 60,
+      "videoQuery": "ab rollout progression form",
+      "cues": [
+        "Rentre le nombril, dos arrondi neutre, jamais cambre.",
+        "Avance seulement aussi loin que tu peux controler.",
+        "Tire avec les abdos pour revenir, pas avec les bras."
+      ],
+      "safety": "Tres exigeant pour le dos. Commence a genoux avec petite amplitude. Stop immediat si tirage lombaire."
+    },
+    {
+      "id": "pull-up",
+      "name": "Traction (pull-up)",
+      "category": "dos",
+      "muscles": ["dos", "bras", "epaules"],
+      "primaryMuscle": "dos",
+      "equipment": ["barre-traction"],
+      "type": "reps",
+      "level": 3,
+      "efficacy": 10,
+      "defaultReps": 6,
+      "tempo": "monte explosif, descends 2s",
+      "rest": 75,
+      "videoQuery": "pull up perfect form thenx",
+      "cues": [
+        "Demarre epaules basses et engagees avant de tirer.",
+        "Amene la poitrine vers la barre, coudes vers le bas.",
+        "Controle la descente jusqu'a bras tendus."
+      ],
+      "safety": "Si pas encore de traction complete, utilise l'elastique en assistance. Ne force pas en fin d'amplitude epaule."
+    },
+    {
+      "id": "band-assisted-pullup",
+      "name": "Traction assistee elastique",
+      "category": "dos",
+      "muscles": ["dos", "bras"],
+      "primaryMuscle": "dos",
+      "equipment": ["barre-traction", "elastique"],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 9,
+      "defaultReps": 8,
+      "tempo": "monte 1s, descends 2s",
+      "rest": 60,
+      "videoQuery": "band assisted pull up thenx",
+      "cues": [
+        "Passe l'elastique sur la barre et place un pied ou un genou dedans.",
+        "Meme technique que la traction stricte, l'elastique aide en bas.",
+        "Cherche la qualite, omoplates qui se serrent."
+      ],
+      "safety": "Verifie l'accroche de l'elastique avant chaque serie. Garde le controle a la descente."
+    },
+    {
+      "id": "band-row",
+      "name": "Tirage elastique (row)",
+      "category": "dos",
+      "muscles": ["dos", "bras"],
+      "primaryMuscle": "dos",
+      "equipment": ["elastique"],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 8,
+      "defaultReps": 14,
+      "tempo": "tire 1s, relache 2s",
+      "rest": 45,
+      "videoQuery": "resistance band row back",
+      "cues": [
+        "Ancre l'elastique a hauteur de poitrine, recule pour mettre en tension.",
+        "Tire les coudes vers l'arriere, serre les omoplates en fin de course.",
+        "Poitrine haute, ne tire pas avec le bas du dos."
+      ],
+      "safety": "Geste ideal pour le mal de dos. Garde le tronc gaine et le mouvement lent."
+    },
+    {
+      "id": "kb-row",
+      "name": "Rowing Kettlebell unilateral",
+      "category": "dos",
+      "muscles": ["dos", "bras"],
+      "primaryMuscle": "dos",
+      "equipment": ["kettlebell"],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 9,
+      "defaultReps": 10,
+      "tempo": "tire 1s, descends 2s",
+      "rest": 50,
+      "videoQuery": "kettlebell single arm row form",
+      "cues": [
+        "Dos plat, incline vers l'avant, une main en appui.",
+        "Tire le coude vers la hanche, omoplate qui se serre.",
+        "Pas de rotation du tronc pour tricher."
+      ],
+      "safety": "Garde le dos neutre, jamais arrondi sous charge. Change de bras a chaque serie."
+    },
+    {
+      "id": "band-pull-apart",
+      "name": "Pull-apart elastique",
+      "category": "dos",
+      "muscles": ["dos", "epaules"],
+      "primaryMuscle": "dos",
+      "equipment": ["elastique"],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 7,
+      "defaultReps": 18,
+      "tempo": "controle 2s",
+      "rest": 30,
+      "videoQuery": "band pull apart rear delt",
+      "cues": [
+        "Bras tendus devant a hauteur d'epaules, elastique tenu.",
+        "Ecarte les bras en serrant les omoplates, ouvre la poitrine.",
+        "Reviens lentement, garde la tension."
+      ],
+      "safety": "Parfait pour la posture et le haut du dos. Ne hausse pas les epaules vers les oreilles."
+    },
+    {
+      "id": "superman",
+      "name": "Superman (extension lombaire)",
+      "category": "dos",
+      "muscles": ["lombaires", "dos", "fessiers"],
+      "primaryMuscle": "lombaires",
+      "equipment": [],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 7,
+      "defaultReps": 12,
+      "tempo": "monte 1s, tiens 1s, descends 2s",
+      "rest": 35,
+      "videoQuery": "superman exercise lower back",
+      "cues": [
+        "Allonge sur le ventre, bras et jambes tendus.",
+        "Decolle bras et jambes en douceur, regard vers le sol.",
+        "Serre les fessiers, ne casse pas la nuque en arriere."
+      ],
+      "safety": "Mouvement doux, faible amplitude. Stop si compression dans le bas du dos."
+    },
+    {
+      "id": "bird-dog",
+      "name": "Bird Dog",
+      "category": "dos",
+      "muscles": ["lombaires", "core", "fessiers"],
+      "primaryMuscle": "lombaires",
+      "equipment": [],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 8,
+      "defaultReps": 12,
+      "tempo": "2s tendu par cote",
+      "rest": 30,
+      "videoQuery": "bird dog exercise form",
+      "cues": [
+        "A quatre pattes, dos neutre comme une table.",
+        "Tends bras et jambe opposes a l'horizontale, sans cambrer.",
+        "Garde le bassin stable, ne tourne pas les hanches."
+      ],
+      "safety": "Renforce le dos en securite. Bouge lentement, le bassin ne doit pas bouger."
+    },
+    {
+      "id": "kb-deadlift",
+      "name": "Souleve de terre Kettlebell",
+      "category": "dos",
+      "muscles": ["dos", "lombaires", "fessiers", "jambes"],
+      "primaryMuscle": "lombaires",
+      "equipment": ["kettlebell"],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 9,
+      "defaultReps": 10,
+      "tempo": "descends 2s, monte 1s",
+      "rest": 60,
+      "videoQuery": "kettlebell deadlift form hinge",
+      "cues": [
+        "Charniere de hanche : pousse les fesses vers l'arriere, dos plat.",
+        "Kettlebell proche du corps, ramasse en gardant la poitrine haute.",
+        "Monte en poussant le sol et en serrant les fessiers."
+      ],
+      "safety": "Le dos reste plat en permanence, jamais arrondi. Charge legere d'abord pour ancrer le mouvement."
+    },
+    {
+      "id": "knee-cars",
+      "name": "CARs genou (rotations controlees)",
+      "category": "mobilite",
+      "muscles": ["mobilite-genou"],
+      "primaryMuscle": "mobilite-genou",
+      "equipment": [],
+      "type": "mobility",
+      "level": 1,
+      "efficacy": 8,
+      "defaultReps": 8,
+      "tempo": "tres lent, 4s par cercle",
+      "rest": 20,
+      "videoQuery": "knee CARs controlled articular rotations",
+      "cues": [
+        "En appui, leve une cuisse, dessine des cercles lents avec le tibia.",
+        "Amplitude maximale mais sans douleur.",
+        "Le reste du corps reste immobile, isole le genou."
+      ],
+      "safety": "Mobilite douce, zero douleur vive. Si craquement indolore, c'est ok ; si douleur, reduis l'amplitude."
+    },
+    {
+      "id": "wall-sit",
+      "name": "Chaise contre le mur",
+      "category": "jambes",
+      "muscles": ["jambes", "mobilite-genou"],
+      "primaryMuscle": "jambes",
+      "equipment": [],
+      "type": "isometric",
+      "level": 1,
+      "efficacy": 7,
+      "defaultWork": 40,
+      "rest": 40,
+      "videoQuery": "wall sit form knee",
+      "cues": [
+        "Dos plat contre le mur, cuisses paralleles au sol (ou plus haut si genou sensible).",
+        "Genoux au-dessus des chevilles, pas devant les orteils.",
+        "Respire, garde le gainage."
+      ],
+      "safety": "Excellent pour renforcer autour du genou. Monte moins bas si tu sens une gene articulaire."
+    },
+    {
+      "id": "spanish-squat",
+      "name": "Spanish Squat (elastique)",
+      "category": "jambes",
+      "muscles": ["jambes", "mobilite-genou"],
+      "primaryMuscle": "mobilite-genou",
+      "equipment": ["elastique"],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 9,
+      "defaultReps": 12,
+      "tempo": "descends 3s, tiens 1s, monte 2s",
+      "rest": 45,
+      "videoQuery": "spanish squat knee rehab band",
+      "cues": [
+        "Elastique ancre derriere toi, passe autour de l'arriere des genoux.",
+        "Assieds-toi en arriere, tibias verticaux, l'elastique te retient.",
+        "Descente lente et controlee, c'est le but."
+      ],
+      "safety": "Reference en renfo du genou (tendon rotulien). Mouvement lent, aucune douleur aigue toleree."
+    },
+    {
+      "id": "step-up",
+      "name": "Montee sur step",
+      "category": "jambes",
+      "muscles": ["jambes", "fessiers", "mobilite-genou"],
+      "primaryMuscle": "jambes",
+      "equipment": [],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 7,
+      "defaultReps": 12,
+      "tempo": "monte 1s, descends 2s",
+      "rest": 40,
+      "videoQuery": "step up exercise knee control",
+      "cues": [
+        "Pied complet sur la marche, genou aligne avec le pied.",
+        "Pousse avec la jambe du dessus, ne rebondis pas avec celle du bas.",
+        "Descente controlee, le genou ne rentre pas vers l'interieur."
+      ],
+      "safety": "Hauteur modeste si genou sensible. Surveille l'alignement genou-pied."
+    },
+    {
+      "id": "glute-bridge",
+      "name": "Pont fessier",
+      "category": "jambes",
+      "muscles": ["fessiers", "lombaires", "jambes"],
+      "primaryMuscle": "fessiers",
+      "equipment": [],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 8,
+      "defaultReps": 15,
+      "tempo": "monte 1s, tiens 1s, descends 2s",
+      "rest": 35,
+      "videoQuery": "glute bridge form",
+      "cues": [
+        "Sur le dos, pieds a plat, monte le bassin en serrant les fessiers.",
+        "Aligne genoux-bassin-epaules en haut, ne cambre pas le bas du dos.",
+        "Le mouvement vient des fessiers, pas des lombaires."
+      ],
+      "safety": "Soulage et renforce le dos via les fessiers. Ne pousse pas trop haut au point de cambrer."
+    },
+    {
+      "id": "push-up",
+      "name": "Pompes",
+      "category": "pectoraux",
+      "muscles": ["pectoraux", "bras", "epaules", "core"],
+      "primaryMuscle": "pectoraux",
+      "equipment": [],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 8,
+      "defaultReps": 12,
+      "tempo": "descends 2s, monte 1s",
+      "rest": 45,
+      "videoQuery": "perfect push up thenx",
+      "cues": [
+        "Corps gaine en ligne, mains sous les epaules.",
+        "Coudes a environ 45 degres du corps, pas en croix.",
+        "Descends la poitrine vers le sol, amplitude complete."
+      ],
+      "safety": "Pose les genoux pour reduire la charge si la forme se casse."
+    },
+    {
+      "id": "pike-push-up",
+      "name": "Pompes piquees (epaules)",
+      "category": "epaules",
+      "muscles": ["epaules", "bras"],
+      "primaryMuscle": "epaules",
+      "equipment": [],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 8,
+      "defaultReps": 10,
+      "tempo": "descends 2s, monte 1s",
+      "rest": 50,
+      "videoQuery": "pike push up thenx shoulders",
+      "cues": [
+        "Position de V inverse, hanches hautes.",
+        "Descends le sommet de la tete vers le sol entre les mains.",
+        "Pousse en gardant les hanches hautes."
+      ],
+      "safety": "Stop si douleur d'epaule. Reduis l'amplitude au debut."
+    },
+    {
+      "id": "kb-goblet-squat",
+      "name": "Goblet Squat Kettlebell",
+      "category": "jambes",
+      "muscles": ["jambes", "fessiers", "core"],
+      "primaryMuscle": "jambes",
+      "equipment": ["kettlebell"],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 9,
+      "defaultReps": 12,
+      "tempo": "descends 2s, monte 1s",
+      "rest": 55,
+      "videoQuery": "goblet squat kettlebell form",
+      "cues": [
+        "Kettlebell tenue contre la poitrine, coudes rentres.",
+        "Descends entre les jambes, dos droit, talons au sol.",
+        "Genoux suivent la direction des pieds, ne rentrent pas."
+      ],
+      "safety": "Profondeur selon ta mobilite. Genou aligne avec le pied, jamais vers l'interieur."
+    },
+    {
+      "id": "kb-swing",
+      "name": "Kettlebell Swing",
+      "category": "cardio",
+      "muscles": ["fessiers", "lombaires", "dos", "cardio"],
+      "primaryMuscle": "fessiers",
+      "equipment": ["kettlebell"],
+      "type": "reps",
+      "level": 2,
+      "efficacy": 9,
+      "defaultReps": 15,
+      "tempo": "explosif puis controle",
+      "rest": 50,
+      "videoQuery": "kettlebell swing hip hinge form",
+      "cues": [
+        "Charniere de hanche, pas un squat. La puissance vient des fessiers.",
+        "Dos plat, la kettlebell passe haut grace au coup de bassin.",
+        "Bras relaches, ils ne soulevent pas la kettlebell."
+      ],
+      "safety": "Dos plat imperatif. Maitrise le hip hinge (souleve de terre) avant. Stop si tirage lombaire."
+    },
+    {
+      "id": "band-face-pull",
+      "name": "Face Pull elastique",
+      "category": "dos",
+      "muscles": ["epaules", "dos"],
+      "primaryMuscle": "epaules",
+      "equipment": ["elastique"],
+      "type": "reps",
+      "level": 1,
+      "efficacy": 7,
+      "defaultReps": 16,
+      "tempo": "tire 1s, relache 2s",
+      "rest": 35,
+      "videoQuery": "band face pull rear delt posture",
+      "cues": [
+        "Elastique ancre a hauteur du visage.",
+        "Tire vers le front, mains qui s'ecartent, coudes hauts.",
+        "Serre l'arriere des epaules, ouvre la poitrine."
+      ],
+      "safety": "Top pour la posture (utile en motion design assis). Mouvement lent et controle."
+    },
+    {
+      "id": "couch-stretch",
+      "name": "Etirement quadriceps (couch stretch)",
+      "category": "mobilite",
+      "muscles": ["mobilite-hanche", "mobilite-genou", "jambes"],
+      "primaryMuscle": "mobilite-hanche",
+      "equipment": [],
+      "type": "isometric",
+      "level": 1,
+      "efficacy": 7,
+      "defaultWork": 40,
+      "rest": 15,
+      "videoQuery": "couch stretch hip flexor quad",
+      "cues": [
+        "Un genou au sol, tibia contre un mur derriere, autre pied devant.",
+        "Bascule le bassin, serre le fessier du cote etire.",
+        "Respire profondement, relache progressivement."
+      ],
+      "safety": "Etirement, pas de douleur au genou pose (mets un coussin). Change de cote."
+    },
+    {
+      "id": "mountain-climber",
+      "name": "Mountain Climbers",
+      "category": "cardio",
+      "muscles": ["core", "abdos", "cardio"],
+      "primaryMuscle": "cardio",
+      "equipment": [],
+      "type": "interval",
+      "level": 1,
+      "efficacy": 7,
+      "defaultWork": 30,
+      "rest": 20,
+      "videoQuery": "mountain climbers form",
+      "cues": [
+        "Position de planche, mains sous les epaules.",
+        "Ramene les genoux vers la poitrine en alternance, rythme regulier.",
+        "Bassin stable, ne monte pas les fesses."
+      ],
+      "safety": "Garde le gainage. Ralentis le rythme plutot que de casser la posture."
+    }
+  ]
+}
