@@ -158,6 +158,16 @@ select option { background: var(--panel-solid); }
 .sp-coach .sp-cues li::before { content: "›"; position: absolute; left: 4px; color: var(--cyan-soft); }
 .sp-coach .sp-safety { font-size: 11px; color: var(--orange); line-height: 1.5; border: 1px solid rgba(240, 153, 123, 0.35); border-radius: 4px; padding: 6px 8px; }
 
+/* ---------- Stepper (saisie 1-tap) ---------- */
+.stepper { display: flex; align-items: stretch; gap: 6px; }
+.stepper input { flex: 1; text-align: center; min-width: 0; }
+.step-btn {
+  width: 46px; min-height: 44px; cursor: pointer; font-size: 20px; font-family: var(--mono);
+  background: rgba(70, 212, 255, 0.06); border: 1px solid var(--line); border-radius: 4px;
+  color: var(--cyan); flex-shrink: 0;
+}
+.step-btn:active { transform: scale(0.94); background: rgba(70, 212, 255, 0.16); }
+
 /* ---------- Recipe list (nutrition) ---------- */
 .recipe-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
 .recipe-row:last-child { border-bottom: none; }

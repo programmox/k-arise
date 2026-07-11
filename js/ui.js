@@ -17,6 +17,27 @@ export function toast(msg, ms = 2200) {
 setSaveErrorHandler(() =>
   toast("Stockage sature : tes donnees n'ont pas pu etre sauvegardees. Exporte ta sauvegarde et libere de l'espace.", 6000));
 
+// Saisie 1-tap : champ numerique entoure de gros boutons -/+ (pas de clavier en salle,
+// mains moites). value peut etre "" (champ vide = "non renseigne" pour l'appelant).
+export function stepper(id, value, step = 1, min = 0) {
+  return `<div class="stepper">
+    <button type="button" class="step-btn" data-target="${id}" data-inc="${-step}" aria-label="Moins">&minus;</button>
+    <input type="number" id="${id}" value="${value}" min="${min}" step="${step}" inputmode="decimal" />
+    <button type="button" class="step-btn" data-target="${id}" data-inc="${step}" aria-label="Plus">+</button>
+  </div>`;
+}
+// Delegation globale : un seul listener pour tous les steppers de l'app.
+document.addEventListener("click", e => {
+  const b = e.target.closest(".step-btn");
+  if (!b) return;
+  const input = document.getElementById(b.dataset.target);
+  if (!input) return;
+  const inc = parseFloat(b.dataset.inc);
+  const min = input.min !== "" ? parseFloat(input.min) : 0;
+  const v = (parseFloat(input.value) || 0) + inc;
+  input.value = Math.max(min, Math.round(v * 100) / 100);
+});
+
 export function panel(inner) {
   return `<div class="panel"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>${inner}</div>`;
 }

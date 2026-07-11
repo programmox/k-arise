@@ -1,7 +1,7 @@
 // K-Arise - SEANCE LIBRE (logger une seance faite soi-meme)
 import { recordSession } from "./store.js";
 import { loadExercises, allExercises, isWeighted } from "./engine.js";
-import { app, esc, panel, go, toast } from "./ui.js";
+import { app, esc, panel, go, toast, stepper } from "./ui.js";
 import { renderFinish } from "./screen-session.js";
 
 let libreList = [];
@@ -44,14 +44,14 @@ function renderLibreItems() {
   host.innerHTML = libreList.map((e, i) => {
     let perf;
     if (e.type === "reps") {
-      const w = isWeighted(e) ? `<div style="flex:1"><label class="field">Charge (kg)</label><input type="number" min="0" step="0.5" id="lb-w-${i}" placeholder="kg" /></div>` : "";
-      perf = `<div class="row gap12 mt8"><div style="flex:1"><label class="field">Reps / serie</label><input type="number" min="0" id="lb-reps-${i}" value="${e.defaultReps || 10}" /></div>${w}</div>`;
+      const w = isWeighted(e) ? `<div style="flex:1"><label class="field">Charge (kg)</label>${stepper(`lb-w-${i}`, "", 0.5)}</div>` : "";
+      perf = `<div class="row gap12 mt8"><div style="flex:1"><label class="field">Reps / serie</label>${stepper(`lb-reps-${i}`, e.defaultReps || 10, 1)}</div>${w}</div>`;
     } else {
-      perf = `<div class="mt8"><label class="field">Temps tenu (s) / serie</label><input type="number" min="0" id="lb-work-${i}" value="${e.defaultWork || 30}" /></div>`;
+      perf = `<div class="mt8"><label class="field">Temps tenu (s) / serie</label>${stepper(`lb-work-${i}`, e.defaultWork || 30, 5)}</div>`;
     }
     return `<div class="exo">
       <div class="exo-head"><span class="exo-name">${esc(e.name)}</span><button class="toggle-cues" data-rm="${i}"><i class="ti ti-x"></i></button></div>
-      <div class="mt8"><label class="field">Series</label><input type="number" min="1" id="lb-sets-${i}" value="3" /></div>
+      <div class="mt8"><label class="field">Series</label>${stepper(`lb-sets-${i}`, 3, 1, 1)}</div>
       ${perf}
       <label class="field">Ressenti</label>
       <div class="chips rpe" data-i="${i}">

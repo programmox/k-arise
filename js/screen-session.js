@@ -1,8 +1,8 @@
 // K-Arise - quete express : config, apercu, lecteur chrono, bilan, fin
-import { getState, recoveryAdvice, recordSession, setActiveSession, getActiveSession, clearActiveSession, muscleDebt } from "./store.js";
+import { getState, recoveryAdvice, recordSession, setActiveSession, getActiveSession, clearActiveSession, muscleDebt, interferenceForLegs } from "./store.js";
 import { loadExercises, buildSession, toPhaseSequence, videoUrl, exoImageUrl, MUSCLE_LABELS, EQUIPMENT_LABELS, GOAL_CHOICES } from "./engine.js";
 import { PhaseTimer, fmt } from "./timer.js";
-import { app, esc, toast, panel, go, navTo, setHeader, showSystemEvents } from "./ui.js";
+import { app, esc, toast, panel, go, navTo, setHeader, showSystemEvents, stepper } from "./ui.js";
 
 // ====================================================================
 // EXPRESS (configuration)
@@ -59,7 +59,12 @@ export function renderExpress() {
     try {
       await loadExercises();
       const session = buildSession({ targets, minutes, equipment: s.equipment, profile: s.profile, exoState: s.exoState });
-      const advice = recoveryAdvice(targets);
+      let advice = recoveryAdvice(targets);
+      // interference course -> muscu : une course de qualite < 24h charge deja les jambes
+      const inter = interferenceForLegs(targets);
+      if (inter && (!advice || advice.level === "go")) {
+        advice = { level: "caution", msg: inter, recovering: advice ? advice.recovering : [] };
+      }
       window.__karise_session = session;
       renderSessionPreview(session, advice);
       document.getElementById("ex-result").scrollIntoView({ behavior: "smooth" });
@@ -274,12 +279,12 @@ export function renderBilan(session, realMin) {
     let inputs;
     if (e.type === "reps") {
       const w = b.weighted
-        ? `<div style="flex:1"><label class="field">Charge (kg)</label><input type="number" min="0" step="0.5" id="log-w-${i}" value="${b.weight ?? ""}" placeholder="kg" /></div>`
+        ? `<div style="flex:1"><label class="field">Charge (kg)</label>${stepper(`log-w-${i}`, b.weight ?? "", 0.5)}</div>`
         : "";
       inputs = `<div class="row gap12 mt8">
-        <div style="flex:1"><label class="field">Reps faites / serie</label><input type="number" min="0" id="log-reps-${i}" value="${b.reps}" /></div>${w}</div>`;
+        <div style="flex:1"><label class="field">Reps faites / serie</label>${stepper(`log-reps-${i}`, b.reps, 1)}</div>${w}</div>`;
     } else {
-      inputs = `<div class="mt8"><label class="field">Temps tenu (s) / serie</label><input type="number" min="0" id="log-work-${i}" value="${b.work}" /></div>`;
+      inputs = `<div class="mt8"><label class="field">Temps tenu (s) / serie</label>${stepper(`log-work-${i}`, b.work, 5)}</div>`;
     }
     return `<div class="exo">
       <div class="exo-head"><span class="exo-name">${esc(e.name)}</span><span class="exo-dose">${esc(b.doseText)} prevu</span></div>
@@ -297,7 +302,7 @@ export function renderBilan(session, realMin) {
     <div class="center mb16"><div class="system-tag">SYSTEM</div><div class="title-box">BILAN DE QUETE</div></div>
     <div class="hint mb12">Note ce que tu as vraiment fait. Le Systeme calibre la difficulte de ta prochaine seance avec (surcharge progressive).</div>
     <div class="row gap12" style="align-items:flex-end">
-      <div style="flex:1"><label class="field"><i class="ti ti-clock"></i> Duree reelle (min)</label><input type="number" min="1" id="bilan-min" value="${measuredMin}" /></div>
+      <div style="flex:1"><label class="field"><i class="ti ti-clock"></i> Duree reelle (min)</label>${stepper("bilan-min", measuredMin, 1, 1)}</div>
       <div style="flex:1"><div class="hint faint">Mesuree par le chrono. Prevu : ${session.totalMin} min. Corrige si besoin.</div></div>
     </div>
     ${rows}

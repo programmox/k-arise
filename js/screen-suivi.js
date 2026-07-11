@@ -1,7 +1,7 @@
 // K-Arise - SUIVI (calendrier mensuel, recuperation, historique, courbes) + edition de quete
 import {
   getState, monthlyStats, recoveryStatus,
-  updateSessionPerfs, deleteSession
+  updateSessionPerfs, deleteSession, trainingLoad
 } from "./store.js";
 import { MUSCLE_LABELS, rebuildSession, loadExercises } from "./engine.js";
 import { app, esc, panel, go, toast, setHeader } from "./ui.js";
@@ -92,6 +92,25 @@ export function renderSuivi() {
       </div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${cells}</div>
     `) +
+    (() => {
+      const load = trainingLoad();
+      const color = load.level === "stop" ? "var(--red)" : load.level === "caution" ? "var(--orange)" : "var(--green)";
+      const label = load.ratio == null ? "Pas encore assez d'historique (28 jours de donnees necessaires)."
+        : load.level === "stop" ? "Tres au-dessus de ton habitude : leve le pied."
+        : load.level === "caution" ? "Progression rapide : prudence."
+        : "Charge equilibree, continue.";
+      return panel(`
+        <div class="section-label"><i class="ti ti-gauge"></i> CHARGE D'ENTRAINEMENT (muscu + course)</div>
+        <div class="hint mb8">Effort ressenti x minutes, tout cumule : ton corps est un seul systeme de recuperation.</div>
+        <div class="row gap12" style="text-align:center;margin-bottom:8px">
+          <div style="flex:1"><div class="white" style="font-size:18px">${load.weekLoad}</div><div class="faint" style="font-size:10px">CHARGE 7J</div></div>
+          <div style="flex:1"><div class="white" style="font-size:18px">${load.chronic}</div><div class="faint" style="font-size:10px">MOY/JOUR 28J</div></div>
+          <div style="flex:1"><div style="font-size:18px;color:${color}">${load.ratio ?? "-"}</div><div class="faint" style="font-size:10px">RATIO 7J/28J</div></div>
+        </div>
+        <div class="hint" style="color:${color}">${label}</div>
+        <div class="hint faint mt8">Indicateur de prudence (ratio > 1.3 = progression rapide, > 1.5 = risque), pas une loi. La douleur declaree passe toujours avant.</div>
+      `);
+    })() +
     panel(`
       <div class="section-label"><i class="ti ti-heartbeat"></i> RECUPERATION PAR GROUPE</div>
       <div class="hint mb8">Temps estime avant de re-solliciter un groupe pour des gains optimaux (gros muscles ~48h, abdos ~24h, mobilite ~12h).</div>

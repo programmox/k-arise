@@ -1,5 +1,5 @@
 // K-Arise - point d'entree : routeur par hash + navigation
-import { loadState, getState } from "./store.js";
+import { loadState, getState, autoBackupIfDue } from "./store.js";
 import { setTimerConfig } from "./timer.js";
 import {
   renderStatus, renderOnboarding, renderEquipment,
@@ -85,6 +85,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     await handleOAuthRedirect().catch(() => {});
   }
   route();
+  // Sauvegarde auto hebdo : fichier telecharge = copie hors navigateur, filet anti perte de donnees
+  if (autoBackupIfDue()) {
+    import("./ui.js").then(({ toast }) => toast("Sauvegarde auto telechargee (k-arise-save.json)."));
+  }
   syncIfDue(); // sync Strava silencieux si connecte, en ligne et sync du (non bloquant)
   window.addEventListener("online", () => syncIfDue());
   if ("serviceWorker" in navigator) {

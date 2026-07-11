@@ -69,6 +69,8 @@ export function renderProfile() {
         <button class="chip ${getSettings().sound ? "on" : ""}" data-set="sound">${getSettings().sound ? "ACTIVE" : "COUPE"}</button></div>
       <div class="row" style="padding:8px 0"><span class="dim" style="font-size:13px"><i class="ti ti-device-mobile-vibration"></i> Vibrations</span>
         <button class="chip ${getSettings().vibration ? "on" : ""}" data-set="vibration">${getSettings().vibration ? "ACTIVE" : "COUPE"}</button></div>
+      <div class="row" style="padding:8px 0"><span class="dim" style="font-size:13px"><i class="ti ti-download"></i> Sauvegarde auto (hebdo)</span>
+        <button class="chip ${getSettings().autoBackup ? "on" : ""}" data-set="autoBackup">${getSettings().autoBackup ? "ACTIVE" : "COUPE"}</button></div>
     `) +
     panel(`
       <div class="section-label"><i class="ti ti-database"></i> DONNEES (portabilite)</div>

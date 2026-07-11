@@ -188,14 +188,50 @@ export function renderRunLive(workout = null, planWeek = null, planDay = null) {
 
     const distanceKm = Math.max(0.1, Math.round(totalKm * 100) / 100);
     const durationMin = Math.max(1, Math.round(elapsed / 60));
-    const result = recordRun({
-      distanceKm, durationMin,
-      kind: workout ? workout.kind : null,
-      planWeek, planDay
-    });
     speak(`Course terminée. ${distanceKm} kilomètres. Bien joué.`, 0);
-    showSystemEvents(result.events, () => renderRunFinish(result, distanceKm, durationMin));
-    if (!result.events.length) renderRunFinish(result, distanceKm, durationMin);
+    renderRunBilan({ distanceKm, durationMin, kind: workout ? workout.kind : null, planWeek, planDay });
+  });
+}
+
+// ---------- Bilan course : effort ressenti + douleur (nourrit la charge unifiee et les garde-fous) ----------
+export function renderRunBilan(data) {
+  setHeader("BILAN D'EXPLORATION", false);
+  app().innerHTML = panel(`
+    <div class="center mb16"><div class="system-tag">SYSTEM</div><div class="title-box">BILAN</div></div>
+    <div class="center white mb12" style="font-size:15px">${data.distanceKm} km &middot; ${data.durationMin} min</div>
+
+    <div class="section-label">EFFORT RESSENTI (charge d'entrainement)</div>
+    <div class="chips mb12" id="rb-rpe">
+      <span class="chip" data-v="3"><i class="ti ti-mood-smile"></i> Facile</span>
+      <span class="chip on" data-v="5"><i class="ti ti-flame"></i> Correct</span>
+      <span class="chip" data-v="7"><i class="ti ti-mood-sad"></i> Dur</span>
+      <span class="chip" data-v="9"><i class="ti ti-skull"></i> Tres dur</span>
+    </div>
+
+    <div class="section-label">DOULEUR TIBIAS / GENOUX ?</div>
+    <div class="hint mb8">Signal precoce de periostite ou de genou du coureur : aucun capteur ne le voit, toi si.</div>
+    <div class="chips mb12" id="rb-pain">
+      <span class="chip on" data-v=""><i class="ti ti-circle-check"></i> Aucune</span>
+      <span class="chip" data-v="legere"><i class="ti ti-alert-triangle"></i> Legere</span>
+      <span class="chip" data-v="forte"><i class="ti ti-hand-stop"></i> Forte</span>
+    </div>
+
+    <button class="btn green-btn mt8" id="rb-save"><i class="ti ti-check"></i> VALIDER</button>
+  `);
+
+  ["rb-rpe", "rb-pain"].forEach(gid =>
+    document.querySelectorAll(`#${gid} .chip`).forEach(chip =>
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(`#${gid} .chip`).forEach(c => c.classList.remove("on"));
+        chip.classList.add("on");
+      })));
+
+  document.getElementById("rb-save").addEventListener("click", () => {
+    const rpeScore = parseInt(document.querySelector("#rb-rpe .chip.on")?.dataset.v) || 5;
+    const pain = document.querySelector("#rb-pain .chip.on")?.dataset.v || null;
+    const result = recordRun(Object.assign({}, data, { rpeScore, pain: pain || null }));
+    showSystemEvents(result.events, () => renderRunFinish(result, data.distanceKm, data.durationMin));
+    if (!result.events.length) renderRunFinish(result, data.distanceKm, data.durationMin);
   });
 }
 

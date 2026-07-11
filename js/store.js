@@ -32,7 +32,7 @@ const DEFAULT_STATE = {
   exoState: {},         // progression par exo : id -> {reps, work, weight, prReps, prWork, prWeight, lastRpe}
   titles: [],           // titres debloques (ids)
   activeSession: null,  // seance en cours (mise en pause) : { session, index, savedAt }
-  settings: { sound: true, vibration: true }, // reglages chrono
+  settings: { sound: true, vibration: true, autoBackup: true }, // chrono + sauvegarde auto hebdo
   stats: { force: 5, mobilite: 5, endurance: 5, core: 5, discipline: 5 },
   xp: 0,
   energy: 100,          // 0-100, recuperation simulee
@@ -471,7 +471,9 @@ function normalizeRunEntry(data) {
       elevation: data.elevation ?? null,
       kind: data.kind || null,
       planWeek: data.planWeek ?? null,
-      planDay: data.planDay ?? null
+      planDay: data.planDay ?? null,
+      rpeScore: data.rpeScore ?? null,  // effort ressenti 1-10 (charge unifiee Foster)
+      pain: data.pain ?? null           // douleur tibias/genoux : null | "legere" | "forte"
     }
   };
 }
@@ -537,6 +539,80 @@ export function insertRuns(list) {
 
 export function getRuns() {
   return getState().history.filter(h => h.type === "run" && h.run);
+}
+
+// ---------- Charge d'entrainement unifiee (methode Foster : RPE seance x minutes) ----------
+// Le corps est UN systeme de recuperation : muscu et course s'additionnent.
+const RPE_MAP = { facile: 3, correct: 5, dur: 8 };
+
+// Charge d'une entree d'historique (muscu OU run), en unites arbitraires (UA)
+export function sessionLoad(entry) {
+  const min = entry.durationMin || 0;
+  if (entry.type === "run") return Math.round((entry.run?.rpeScore || 5) * min);
+  const rpes = (entry.exercises || []).filter(e => e && e.rpe).map(e => RPE_MAP[e.rpe] || 5);
+  const avg = rpes.length ? rpes.reduce((a, b) => a + b, 0) / rpes.length : 5;
+  return Math.round(avg * min);
+}
+
+/*
+ trainingLoad() -> { weekLoad, acute, chronic, ratio, level }
+ acute = charge moyenne/jour sur 7j ; chronic = sur 28j ; ratio = acute/chronic (ACWR).
+ Indicateur de PRUDENCE, pas un oracle : ratio > 1.3 = progression rapide, > 1.5 = lever le pied.
+*/
+export function trainingLoad() {
+  const s = getState();
+  const now = Date.now();
+  let week = 0, month = 0;
+  for (const h of s.history) {
+    const age = now - new Date(h.date).getTime();
+    if (age > 28 * 86400000) break; // history triee recent -> ancien
+    const load = sessionLoad(h);
+    month += load;
+    if (age <= 7 * 86400000) week += load;
+  }
+  const acute = week / 7, chronic = month / 28;
+  const ratio = chronic > 10 ? Math.round((acute / chronic) * 100) / 100 : null; // pas assez d'historique
+  const level = ratio == null ? "info" : ratio > 1.5 ? "stop" : ratio > 1.3 ? "caution" : "ok";
+  return { weekLoad: Math.round(week), acute: Math.round(acute), chronic: Math.round(chronic), ratio, level };
+}
+
+// ---------- Garde-fous course (douleur + interference muscu/course) ----------
+// La douleur declaree ecrase tout : "forte" recemment ou "legere" repetee = alerte.
+export function painStatus() {
+  const runs = getRuns().filter(h => Date.now() - new Date(h.date).getTime() < 14 * 86400000);
+  if (runs.some(h => h.run.pain === "forte" && Date.now() - new Date(h.date).getTime() < 7 * 86400000)) {
+    return { level: "stop", msg: "Douleur forte signalee recemment. Coupe la course quelques jours ; si ca persiste, consulte. Le plan attendra." };
+  }
+  const lastTwo = runs.slice(0, 2);
+  if (lastTwo.length === 2 && lastTwo.every(h => h.run.pain === "legere")) {
+    return { level: "caution", msg: "Douleur legere sur tes 2 dernieres courses. Reduis la prochaine seance de ~30% et surveille." };
+  }
+  return null;
+}
+
+// Interference muscu <-> course : jambes lourdes et course de qualite a < 24h = les deux se sabotent.
+const QUALITY_KINDS = ["tempo", "intervalles", "longue", "course"];
+const LEG_MUSCLES = ["jambes", "fessiers", "lombaires"];
+
+// Cote muscu : on s'apprete a travailler les jambes ; y a-t-il eu une course de qualite < 24h ?
+export function interferenceForLegs(targets) {
+  if (!targets || !targets.some(t => LEG_MUSCLES.includes(t))) return null;
+  const recent = getRuns().find(h => Date.now() - new Date(h.date).getTime() < 24 * 3600000 && QUALITY_KINDS.includes(h.run.kind));
+  if (!recent) return null;
+  return `Course ${recent.run.kind} il y a moins de 24h : tes jambes encaissent deja. Allege la charge jambes/fessiers aujourd'hui, ou decale a demain.`;
+}
+
+// Cote course : seance de qualite prevue ; y a-t-il eu une muscu jambes lourde < 24h ?
+export function interferenceForRun() {
+  const s = getState();
+  const recent = s.history.find(h => {
+    if (h.type === "run") return false;
+    if (Date.now() - new Date(h.date).getTime() > 24 * 3600000) return false;
+    const legExos = (h.exercises || []).filter(e => LEG_MUSCLES.includes(e.primaryMuscle)).length;
+    return legExos >= 2;
+  });
+  if (!recent) return null;
+  return "Muscu jambes il y a moins de 24h : garde la course FACILE aujourd'hui, la qualite (tempo/intervalles) attendra demain.";
 }
 
 // Volume de course (km) par semaine calendaire ISO approx (cle = lundi de la semaine, ISO date)
@@ -692,6 +768,15 @@ export function backupReminderDue() {
   const ref = s.lastBackupAt || s.createdAt;
   if (!ref) return false;
   return Date.now() - new Date(ref).getTime() > BACKUP_INTERVAL;
+}
+
+// Sauvegarde auto : si active et due, telecharge le JSON sans intervention (le fichier
+// atterrit dans Telechargements = HORS du stockage navigateur, survit a un "effacer les donnees").
+// Retourne true si un backup a ete declenche (l'appelant affiche le toast).
+export function autoBackupIfDue() {
+  const s = getState();
+  if (!s.settings.autoBackup || !backupReminderDue()) return false;
+  try { exportSave(); return true; } catch (e) { return false; }
 }
 
 // Valide la structure minimale d'une sauvegarde importee avant de l'appliquer.

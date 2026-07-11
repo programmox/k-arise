@@ -1,5 +1,5 @@
 // K-Arise - onglet COURSE ("Quetes d'exploration") : saisie de runs, plan d'entrainement, historique.
-import { getState, saveState, recordRun, getRuns, deleteSession } from "./store.js";
+import { getState, saveState, recordRun, getRuns, deleteSession, painStatus, interferenceForRun, trainingLoad } from "./store.js";
 import { RUN_GOALS, KIND_LABELS, formatPace, paceToKmh, scheduleDays, STRETCHES, estimateFitness, generatePlan, currentWeek, nextWorkout } from "./running.js";
 import { app, esc, toast, panel, go, showSystemEvents } from "./ui.js";
 import { isConfigured, isConnected, sync as stravaSync } from "./strava.js";
@@ -49,6 +49,19 @@ function logPanel() {
     </div>
     <label class="field">Type de seance</label>
     <div class="chips" id="run-kind">${chips}</div>
+    <label class="field">Effort ressenti</label>
+    <div class="chips" id="run-rpe">
+      <span class="chip" data-v="3">Facile</span>
+      <span class="chip on" data-v="5">Correct</span>
+      <span class="chip" data-v="7">Dur</span>
+      <span class="chip" data-v="9">Tres dur</span>
+    </div>
+    <label class="field">Douleur tibias / genoux ?</label>
+    <div class="chips" id="run-pain">
+      <span class="chip on" data-v="">Aucune</span>
+      <span class="chip" data-v="legere">Legere</span>
+      <span class="chip" data-v="forte">Forte</span>
+    </div>
     <button class="btn green-btn mt16" id="run-save"><i class="ti ti-check"></i> VALIDER L'EXPLORATION</button>
     <button class="btn ghost mt8" id="run-free-live"><i class="ti ti-player-play"></i> COURSE LIBRE EN DIRECT (GPS)</button>
   `);
@@ -166,11 +179,38 @@ function historyPanel(s) {
   return panel(`<div class="section-label"><i class="ti ti-history"></i> DERNIERES EXPLORATIONS</div>${rows}`);
 }
 
+// UNE seule alerte a la fois, hierarchie stricte : douleur declaree > interference > charge (ACWR).
+// Indicateurs de prudence, jamais d'oracle — plus d'une alerte rouge simultanee = bug de design.
+function guardPanel() {
+  const pain = painStatus();
+  if (pain) {
+    const color = pain.level === "stop" ? "var(--red)" : "var(--orange)";
+    return panel(`<div style="border:1px solid ${color};border-radius:4px;padding:10px 12px">
+      <div style="font-size:12px;color:${color}"><i class="ti ti-hand-stop"></i> ${esc(pain.msg)}</div></div>`);
+  }
+  const inter = interferenceForRun();
+  if (inter) {
+    return panel(`<div style="border:1px solid var(--orange);border-radius:4px;padding:10px 12px">
+      <div style="font-size:12px;color:var(--orange)"><i class="ti ti-arrows-cross"></i> ${esc(inter)}</div></div>`);
+  }
+  const load = trainingLoad();
+  if (load.level === "stop" || load.level === "caution") {
+    const color = load.level === "stop" ? "var(--red)" : "var(--orange)";
+    const msg = load.level === "stop"
+      ? `Ta charge des 7 derniers jours est tres au-dessus de ton habitude (ratio ${load.ratio}). Leve le pied cette semaine.`
+      : `Progression rapide ces 7 jours (ratio ${load.ratio}). Prudence sur les prochaines seances.`;
+    return panel(`<div style="border:1px solid ${color};border-radius:4px;padding:10px 12px">
+      <div style="font-size:12px;color:${color}"><i class="ti ti-gauge"></i> ${esc(msg)}</div></div>`);
+  }
+  return "";
+}
+
 // ---------- Rendu principal ----------
 export function renderCourse() {
   const s = getState();
   app().innerHTML =
     syncPanel(s) +
+    guardPanel() +
     (s.running.plan ? planPanel(s) : goalPanel(s)) +
     logPanel() +
     recoveryPanel() +
@@ -197,11 +237,12 @@ export function renderCourse() {
   document.getElementById("run-cfg")?.addEventListener("click", () => go("#profile"));
 
   // saisie manuelle
-  document.querySelectorAll("#run-kind .chip").forEach(chip =>
-    chip.addEventListener("click", () => {
-      document.querySelectorAll("#run-kind .chip").forEach(c => c.classList.remove("on"));
-      chip.classList.add("on");
-    }));
+  ["run-kind", "run-rpe", "run-pain"].forEach(gid =>
+    document.querySelectorAll(`#${gid} .chip`).forEach(chip =>
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(`#${gid} .chip`).forEach(c => c.classList.remove("on"));
+        chip.classList.add("on");
+      })));
   document.getElementById("run-save")?.addEventListener("click", () => {
     const km = parseFloat(document.getElementById("run-km").value);
     const min = parseFloat(document.getElementById("run-min").value);
@@ -209,7 +250,9 @@ export function renderCourse() {
     const hr = parseFloat(document.getElementById("run-hr").value) || null;
     const elev = parseFloat(document.getElementById("run-elev").value) || null;
     const kind = document.querySelector("#run-kind .chip.on")?.dataset.kind || null;
-    const result = recordRun({ distanceKm: km, durationMin: min, avgHr: hr, elevation: elev, kind });
+    const rpeScore = parseInt(document.querySelector("#run-rpe .chip.on")?.dataset.v) || 5;
+    const pain = document.querySelector("#run-pain .chip.on")?.dataset.v || null;
+    const result = recordRun({ distanceKm: km, durationMin: min, avgHr: hr, elevation: elev, kind, rpeScore, pain });
     toast(`+${result.gained} XP${result.isPacePr ? " · PR d'allure !" : ""}`);
     showSystemEvents(result.events, () => renderCourse());
     if (!result.events.length) renderCourse();
