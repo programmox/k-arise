@@ -1,5 +1,5 @@
 // K-Arise - service worker : cache l'app pour un fonctionnement hors-ligne
-const CACHE = "karise-v6";
+const CACHE = "karise-v7";
 const ASSETS = [
   "./index.html",
   "./css/style.css",
@@ -12,6 +12,7 @@ const ASSETS = [
   "./js/running.js",
   "./js/strava.js",
   "./js/screen-course.js",
+  "./js/screen-run-live.js",
   "./js/screen-status.js",
   "./js/screen-onboarding.js",
   "./js/screen-equipment.js",

@@ -16,6 +16,26 @@ export const KIND_LABELS = {
   course: "JOUR DE COURSE"
 };
 
+// Jours de la semaine assignes aux seances (3/sem ou 4/sem). La longue/course tombe le dimanche.
+export function scheduleDays(nbSessions) {
+  return nbSessions === 3 ? ["Mardi", "Jeudi", "Dimanche"] : ["Mardi", "Jeudi", "Samedi", "Dimanche"];
+}
+
+// 5.5 min/km -> "10.9 km/h"
+export function paceToKmh(minKm) {
+  if (!minKm || !isFinite(minKm)) return "-";
+  return (Math.round((60 / minKm) * 10) / 10) + " km/h";
+}
+
+// Etirements post-course (recuperation). Meme logique que les consignes muscu : local, systematique.
+export const STRETCHES = [
+  { name: "Quadriceps debout", sec: 30, cue: "Talon vers la fesse, genoux serres, bassin neutre. 30s par jambe." },
+  { name: "Ischio-jambiers", sec: 30, cue: "Jambe tendue sur un support bas, dos droit, penche-toi depuis la hanche." },
+  { name: "Mollets contre un mur", sec: 30, cue: "Jambe arriere tendue, talon au sol, pousse le mur. 30s par jambe." },
+  { name: "Psoas (fente basse)", sec: 30, cue: "Genou arriere au sol, pousse le bassin vers l'avant, buste droit." },
+  { name: "Fessiers (chiffre 4)", sec: 30, cue: "Allonge, cheville sur le genou oppose, tire la cuisse vers toi." }
+];
+
 export function paceOf(entry) {
   const r = entry.run || {};
   return r.paceMinKm || (r.distanceKm ? (entry.durationMin / r.distanceKm) : null);

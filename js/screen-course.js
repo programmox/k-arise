@@ -1,8 +1,9 @@
 // K-Arise - onglet COURSE ("Quetes d'exploration") : saisie de runs, plan d'entrainement, historique.
 import { getState, saveState, recordRun, getRuns, deleteSession } from "./store.js";
-import { RUN_GOALS, KIND_LABELS, formatPace, estimateFitness, generatePlan, currentWeek, nextWorkout } from "./running.js";
+import { RUN_GOALS, KIND_LABELS, formatPace, paceToKmh, scheduleDays, STRETCHES, estimateFitness, generatePlan, currentWeek, nextWorkout } from "./running.js";
 import { app, esc, toast, panel, go, showSystemEvents } from "./ui.js";
 import { isConfigured, isConnected, sync as stravaSync } from "./strava.js";
+import { renderRunLive } from "./screen-run-live.js";
 
 let showFullPlan = false;
 
@@ -49,15 +50,31 @@ function logPanel() {
     <label class="field">Type de seance</label>
     <div class="chips" id="run-kind">${chips}</div>
     <button class="btn green-btn mt16" id="run-save"><i class="ti ti-check"></i> VALIDER L'EXPLORATION</button>
+    <button class="btn ghost mt8" id="run-free-live"><i class="ti ti-player-play"></i> COURSE LIBRE EN DIRECT (GPS)</button>
+  `);
+}
+
+// ---------- Panneau recuperation (etirements post-course, toujours visible) ----------
+function recoveryPanel() {
+  const rows = STRETCHES.map(st => `
+    <div style="padding:6px 0;border-bottom:1px solid var(--line)">
+      <div class="row"><span class="dim" style="font-size:12px">${esc(st.name)}</span><span class="faint" style="font-size:11px">${st.sec}s</span></div>
+    </div>`).join("");
+  return panel(`
+    <div class="section-label"><i class="ti ti-stretching"></i> ETIREMENTS POST-COURSE (5 MIN)</div>
+    <div class="hint mb8">Apres CHAQUE course, muscles chauds. Meme logique que la muscu : la recup fait partie de l'entrainement.</div>
+    ${rows}
+    <div class="hint faint mt8"><i class="ti ti-tools-kitchen-2"></i> Cote assiette : ouvre l'onglet Repas apres ta course, les besoins post-effort y sont calcules automatiquement.</div>
   `);
 }
 
 // ---------- Panneau plan ----------
-function dayRow(d, idx) {
+function dayRow(d, idx, nbDays) {
   const doneMark = d.done ? '<i class="ti ti-circle-check green"></i>' : '<i class="ti ti-circle faint"></i>';
+  const weekday = scheduleDays(nbDays)[idx] || "";
   return `<div class="row" style="font-size:12px;padding:6px 0;border-bottom:1px solid var(--line)">
-    <span class="${d.done ? "faint" : "dim"}">${doneMark} ${esc(KIND_LABELS[d.kind] || d.kind)}</span>
-    <span class="${d.done ? "faint" : "white"}" style="font-size:11px">${d.km} km &middot; ${formatPace(d.paceTarget)}</span>
+    <span class="${d.done ? "faint" : "dim"}">${doneMark} <span class="white">${esc(weekday)}</span> &middot; ${esc(KIND_LABELS[d.kind] || d.kind)}</span>
+    <span class="${d.done ? "faint" : "white"}" style="font-size:11px">${d.km} km &middot; ${formatPace(d.paceTarget)} (${paceToKmh(d.paceTarget)})</span>
   </div>`;
 }
 
@@ -72,16 +89,20 @@ function planPanel(s) {
   const pct = Math.min(100, Math.round((doneKm / week.volumeKm) * 100));
   const g = RUN_GOALS[plan.goal];
 
+  const nextIdx = next ? week.days.indexOf(next) : -1;
+  const nextDayName = next ? (scheduleDays(week.days.length)[nextIdx] || "") : "";
   const nextHtml = next
-    ? `<div class="white mb8" style="font-size:14px">${esc(KIND_LABELS[next.kind])} &middot; ${next.km} km &middot; ${formatPace(next.paceTarget)}</div>
-       <div class="hint mb12">${esc(next.desc)}</div>`
-    : `<div class="green mb12" style="font-size:13px"><i class="ti ti-circle-check"></i> Semaine complete. Repos merite, Hunter.</div>`;
+    ? `<div class="white mb8" style="font-size:14px">${esc(nextDayName)} : ${esc(KIND_LABELS[next.kind])} &middot; ${next.km} km &middot; ${formatPace(next.paceTarget)} (${paceToKmh(next.paceTarget)})</div>
+       <div class="hint mb8">${esc(next.desc)}</div>
+       <button class="btn green-btn mb12" id="run-start-live"><i class="ti ti-player-play"></i> DEMARRER (GPS + CHRONO + COACH VOCAL)</button>`
+    : `<div class="green mb8" style="font-size:13px"><i class="ti ti-circle-check"></i> Semaine complete. Repos merite, Hunter.</div>
+       <div class="hint mb12"><i class="ti ti-stretching"></i> Jour de repos : etirements (voir plus bas) + vise tes objectifs proteines/glucides dans l'onglet Repas pour recuperer plus vite.</div>`;
 
   const weeksHtml = showFullPlan
     ? plan.weeks.map(w => `
         <div class="section-label mt12">SEMAINE ${w.num}${w.deload ? " &middot; DECHARGE" : ""}${w.taper ? " &middot; AFFUTAGE" : ""} &middot; ${w.volumeKm} KM</div>
-        ${w.days.map(dayRow).join("")}`).join("")
-    : week.days.map(dayRow).join("");
+        ${w.days.map((d, i) => dayRow(d, i, w.days.length)).join("")}`).join("")
+    : week.days.map((d, i) => dayRow(d, i, week.days.length)).join("");
 
   return panel(`
     <div class="section-label"><i class="ti ti-map"></i> PLAN ${esc(g.label)} &middot; SEMAINE ${cw}/${plan.weeks.length}${week.deload ? " (DECHARGE)" : ""}${week.taper ? " (AFFUTAGE)" : ""}</div>
@@ -150,8 +171,19 @@ export function renderCourse() {
     syncPanel(s) +
     (s.running.plan ? planPanel(s) : goalPanel(s)) +
     logPanel() +
+    recoveryPanel() +
     historyPanel(s);
   if (s.running.plan) saveState(); // nextWorkout a pu marquer des jours "done"
+
+  // course en direct (GPS) : seance du plan ou course libre
+  document.getElementById("run-start-live")?.addEventListener("click", () => {
+    const plan = s.running.plan;
+    const cw = currentWeek(plan);
+    const next = nextWorkout(plan, s.history);
+    const idx = next ? plan.weeks[cw - 1].days.indexOf(next) : null;
+    renderRunLive(next, cw, idx);
+  });
+  document.getElementById("run-free-live")?.addEventListener("click", () => renderRunLive(null));
 
   // sync manuel
   document.getElementById("run-sync")?.addEventListener("click", async () => {
