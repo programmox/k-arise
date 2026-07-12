@@ -13,7 +13,8 @@ export const KIND_LABELS = {
   tempo: "Tempo",
   intervalles: "Intervalles",
   longue: "Sortie longue",
-  course: "JOUR DE COURSE"
+  course: "JOUR DE COURSE",
+  test: "Test 5K chrono"
 };
 
 // Jours de la semaine assignes aux seances (3/sem ou 4/sem). La longue/course tombe le dimanche.
@@ -75,6 +76,11 @@ export function estimateFitness(runs, questionnaire) {
   const cutoff = Date.now() - 8 * 7 * 86400000; // 8 semaines
   const recent = (runs || []).filter(h => new Date(h.date).getTime() >= cutoff);
 
+  // Test 5K chrono recent : la seule mesure MAXIMALE. Les allures d'entrainement sous-maximales
+  // sont biaisees (les debutants courent tout trop vite) ; un test ecrase la mediane pour les zones.
+  const test = recent.find(h => h.run.kind === "test" && (h.run.distanceKm || 0) >= 4);
+  const testPace = test ? test.run.paceMinKm : null;
+
   if (recent.length >= 3) {
     // volume hebdo : moyenne des semaines calendaires NON vides des 4 dernieres semaines
     const fourWeeks = Date.now() - 4 * 7 * 86400000;
@@ -93,16 +99,16 @@ export function estimateFitness(runs, questionnaire) {
     const longestKm = Math.max(...recent.map(h => h.run.distanceKm || 0));
     const level = (weeklyKm >= 35 || basePace < 5.0) ? "avance"
                 : (weeklyKm >= 15 || basePace < 6.0) ? "intermediaire" : "debutant";
-    return { level, weeklyKm, basePace: Math.round(basePace * 100) / 100, longestKm, source: "runs" };
+    return { level, weeklyKm, basePace: Math.round(basePace * 100) / 100, longestKm, testPace, source: testPace ? "test" : "runs" };
   }
 
   if (questionnaire && questionnaire.level) {
     const q = questionnaire;
     const basePace = q.level === "avance" ? 5.0 : q.level === "intermediaire" ? 5.8 : 6.5;
-    return { level: q.level, weeklyKm: q.weeklyKm || 10, basePace, longestKm: q.longestKm || 5, source: "questionnaire" };
+    return { level: q.level, weeklyKm: q.weeklyKm || 10, basePace, longestKm: q.longestKm || 5, testPace, source: "questionnaire" };
   }
 
-  return { level: "debutant", weeklyKm: 10, basePace: 6.5, longestKm: 5, source: "defaut" };
+  return { level: "debutant", weeklyKm: 10, basePace: 6.5, longestKm: 5, testPace, source: "defaut" };
 }
 
 // Zones d'allure derivees de l'allure de base (Jack Daniels ultra-simplifie)
@@ -112,6 +118,22 @@ export function paceZones(basePace) {
     tempo: Math.round((basePace - 0.3) * 100) / 100,
     intervalle: Math.round((basePace - 0.8) * 100) / 100
   };
+}
+
+// Zones derivees d'un TEST 5K a fond (relations type Daniels/VDOT) — bien plus fiables
+// que la mediane d'entrainement : allure seuil ~ +0.3, endurance ~ +1.1, VO2max ~ allure test.
+export function paceZonesFromTest(testPace) {
+  return {
+    endurance: Math.round((testPace + 1.1) * 100) / 100,
+    tempo: Math.round((testPace + 0.3) * 100) / 100,
+    intervalle: Math.round(testPace * 100) / 100
+  };
+}
+
+// Allure course cible depuis le test 5K (equivalences inter-distances approx.)
+function racePaceFromTest(testPace, distanceKm) {
+  const adj = distanceKm <= 5 ? 0 : distanceKm <= 10 ? 0.18 : distanceKm <= 21.1 ? 0.45 : 0.75;
+  return Math.round((testPace + adj) * 100) / 100;
 }
 
 // Allure course cible interpolee selon la distance objectif (plus long = plus lent que base)
@@ -130,8 +152,9 @@ function racePace(basePace, distanceKm) {
 export function generatePlan({ goal, raceDate, fitness }) {
   const g = RUN_GOALS[goal];
   if (!g) return null;
-  const zones = paceZones(fitness.basePace);
-  const rp = racePace(fitness.basePace, g.distanceKm);
+  // Zones : test 5K recent (mesure maximale, fiable) > mediane d'entrainement (biaisee)
+  const zones = fitness.testPace ? paceZonesFromTest(fitness.testPace) : paceZones(fitness.basePace);
+  const rp = fitness.testPace ? racePaceFromTest(fitness.testPace, g.distanceKm) : racePace(fitness.basePace, g.distanceKm);
 
   let weeks = g.weeks;
   if (raceDate) {
@@ -148,28 +171,34 @@ export function generatePlan({ goal, raceDate, fitness }) {
     const isTaper = w >= weeks - 1;
     const isDeload = !isTaper && w % 4 === 0;
     let volumeKm;
-    if (isTaper) volumeKm = Math.round(peak * (w === weeks ? 0.5 : 0.75));
+    // Taper : 2 semaines, volume -40% puis -55% du pic REELLEMENT atteint (prevVol, pas la
+    // cible theorique), INTENSITE ET FREQUENCE MAINTENUES (Bosquet 2007 : -41-60% = optimal)
+    if (isTaper) volumeKm = Math.round(prevVol * (w === weeks ? 0.45 : 0.6));
     else if (isDeload) volumeKm = Math.round(prevVol * 0.7);
     else { volumeKm = Math.round(Math.min(prevVol * 1.10, peak)); prevVol = volumeKm; }
 
-    const longKm = Math.min(Math.round(volumeKm * 0.4 * 10) / 10, g.longCap);
+    // Sortie longue plafonnee a 30% du volume hebdo (consensus prevention blessure)
+    const longKm = Math.min(Math.round(volumeKm * 0.3 * 10) / 10, g.longCap);
     const days = [];
-    days.push({ kind: "endurance", km: Math.round(volumeKm * 0.25 * 10) / 10, paceTarget: zones.endurance,
-                desc: "Allure confortable, tu dois pouvoir parler.", done: null });
-    if (w % 2 === 1) {
-      days.push({ kind: "tempo", km: Math.round(volumeKm * 0.2 * 10) / 10, paceTarget: zones.tempo,
-                  desc: "Allure soutenue et reguliere, inconfortable mais tenable.", done: null });
+    days.push({ kind: "endurance", km: Math.round(volumeKm * 0.28 * 10) / 10, paceTarget: zones.endurance,
+                desc: "Allure confortable, tu dois pouvoir parler. Finis par 4 lignes droites de 20s vives (economie de course).", done: null });
+    // Distribution PYRAMIDALE pour coureur recreatif (Rosenblat 2025, meta-analyse en reseau) :
+    // beaucoup de facile, du seuil regulier, le VO2max en petite dose. Debutant : tempo uniquement.
+    const wantsIntervals = fitness.level !== "debutant" && w % 2 === 0 && !isTaper;
+    if (wantsIntervals) {
+      days.push({ kind: "intervalles", km: Math.round(volumeKm * 0.17 * 10) / 10, paceTarget: zones.intervalle,
+                  desc: "5-6 x 800-1000 m a allure test 5K, recup 2-3 min en trottinant. Arrete la serie si l'allure s'effondre.", done: null });
     } else {
-      days.push({ kind: "intervalles", km: Math.round(volumeKm * 0.18 * 10) / 10, paceTarget: zones.intervalle,
-                  desc: "6-10 x 400-800 m rapides, recup trot egale a l'effort.", done: null });
+      days.push({ kind: "tempo", km: Math.round(volumeKm * 0.2 * 10) / 10, paceTarget: zones.tempo,
+                  desc: "20-30 min continues a allure seuil : inconfortable mais regulier, phrase courte possible.", done: null });
     }
     if (sessionsPerWeek === 4) {
       days.push({ kind: "endurance", km: Math.round(volumeKm * 0.15 * 10) / 10, paceTarget: zones.endurance,
-                  desc: "Footing court de recuperation.", done: null });
+                  desc: "Footing court de recuperation, vraiment lent.", done: null });
     }
     if (w === weeks) {
       days.push({ kind: "course", km: g.distanceKm, paceTarget: rp,
-                  desc: `Jour J : ${g.label}. Pars prudent, finis fort.`, done: null });
+                  desc: `Jour J : ${g.label}. Pars prudent, negative split : la 2e moitie plus vite que la 1re.`, done: null });
     } else {
       days.push({ kind: "longue", km: longKm, paceTarget: Math.round((zones.endurance + 0.3) * 100) / 100,
                   desc: "Le donjon de la semaine : lent et long, c'est lui qui construit le moteur.", done: null });
@@ -210,13 +239,19 @@ export function nextWorkout(plan, history) {
   return (week && week.days.find(d => !d.done)) || null;
 }
 
-// Recalage leger : si 2 semaines ecoulees consecutives < 60% du volume prevu,
-// regenere le plan depuis maintenant avec le fitness recalcule. Retourne le nouveau plan ou null.
+// Recalage BIDIRECTIONNEL : regenere le plan depuis maintenant avec le fitness recalcule si
+// (a) decrochage : 2 semaines consecutives < 60% du volume prevu (le plan redescend), ou
+// (b) surperformance / test : le niveau reel a change (allure -0.25 min/km, volume +20%,
+//     ou nouveau test 5K) — le plan monte. Retourne le nouveau plan ou null.
 export function adaptPlan(plan, runs, raceDate) {
   if (!plan) return null;
   const start = new Date(plan.generatedAt).getTime();
   const cw = currentWeek(plan);
   if (cw < 3) return null; // pas assez de recul
+
+  const fitness = estimateFitness(runs, null);
+
+  // (a) decrochage
   let weakStreak = 0;
   for (let w = cw - 2; w < cw; w++) {
     const week = plan.weeks[w - 1];
@@ -227,7 +262,15 @@ export function adaptPlan(plan, runs, raceDate) {
     }).reduce((a, h) => a + (h.run.distanceKm || 0), 0);
     if (done < week.volumeKm * 0.6) weakStreak++; else weakStreak = 0;
   }
-  if (weakStreak < 2) return null;
-  const fitness = estimateFitness(runs, null);
-  return generatePlan({ goal: plan.goal, raceDate: raceDate || null, fitness });
+  if (weakStreak >= 2) return generatePlan({ goal: plan.goal, raceDate: raceDate || null, fitness });
+
+  // (b) progression reelle : test 5K plus recent que le plan, allure nettement meilleure, ou volume superieur
+  const old = plan.fitness || {};
+  const newTest = fitness.testPace && (!old.testPace || fitness.testPace < old.testPace - 0.05);
+  const fasterPace = old.basePace && fitness.basePace < old.basePace - 0.25;
+  const moreVolume = old.weeklyKm && fitness.weeklyKm > old.weeklyKm * 1.2;
+  if (newTest || fasterPace || moreVolume) {
+    return generatePlan({ goal: plan.goal, raceDate: raceDate || null, fitness });
+  }
+  return null;
 }

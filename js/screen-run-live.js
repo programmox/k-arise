@@ -230,6 +230,7 @@ export function renderRunBilan(data) {
     const rpeScore = parseInt(document.querySelector("#rb-rpe .chip.on")?.dataset.v) || 5;
     const pain = document.querySelector("#rb-pain .chip.on")?.dataset.v || null;
     const result = recordRun(Object.assign({}, data, { rpeScore, pain: pain || null }));
+    if (data.kind === "test") toast("Test 5K enregistre. Regenere ton plan (onglet Course) : tes allures seront recalibrees dessus.", 5000);
     showSystemEvents(result.events, () => renderRunFinish(result, data.distanceKm, data.durationMin));
     if (!result.events.length) renderRunFinish(result, data.distanceKm, data.durationMin);
   });

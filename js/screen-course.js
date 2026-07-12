@@ -35,7 +35,7 @@ function syncPanel(s) {
 
 // ---------- Panneau saisie manuelle ----------
 function logPanel() {
-  const kinds = ["endurance", "tempo", "intervalles", "longue", "course"];
+  const kinds = ["endurance", "tempo", "intervalles", "longue", "course", "test"];
   const chips = kinds.map((k, i) => `<span class="chip ${i === 0 ? "on" : ""}" data-kind="${k}">${esc(KIND_LABELS[k])}</span>`).join("");
   return panel(`
     <div class="section-label"><i class="ti ti-run"></i> LOGGER UNE EXPLORATION</div>
@@ -130,7 +130,9 @@ function planPanel(s) {
       <button class="btn ghost" id="run-toggle-plan">${showFullPlan ? "SEMAINE COURANTE" : "TOUT LE PLAN"}</button>
       <button class="btn ghost" id="run-regen"><i class="ti ti-refresh"></i> REGENERER</button>
     </div>
-    <div class="hint faint mt8">Allures : endurance ${formatPace(plan.zones.endurance)} &middot; tempo ${formatPace(plan.zones.tempo)} &middot; intervalles ${formatPace(plan.zones.intervalle)} &middot; course ${formatPace(plan.zones.course)}</div>
+    <button class="btn ghost mt8" id="run-test5k"><i class="ti ti-stopwatch"></i> TEST 5K CHRONO (recalibrer mes allures)</button>
+    <div class="hint faint mt8">Allures : endurance ${formatPace(plan.zones.endurance)} &middot; tempo ${formatPace(plan.zones.tempo)} &middot; intervalles ${formatPace(plan.zones.intervalle)} &middot; course ${formatPace(plan.zones.course)}${plan.fitness && plan.fitness.testPace ? ' &middot; <span class="green">calibrees sur ton test 5K</span>' : ""}</div>
+    <div class="hint faint mt8"><i class="ti ti-flask"></i> Methode : distribution pyramidale pour coureur recreatif (meta-analyse Rosenblat 2025), affutage 2 sem -40/-55% de volume a intensite maintenue (meta-analyse Bosquet), sortie longue &le;30% du volume, progression &le;+10%/sem. Un test 5K toutes les 6-8 semaines ancre tes allures sur une vraie mesure maximale.</div>
   `);
 }
 
@@ -226,6 +228,12 @@ export function renderCourse() {
     renderRunLive(next, cw, idx);
   });
   document.getElementById("run-free-live")?.addEventListener("click", () => renderRunLive(null));
+  document.getElementById("run-test5k")?.addEventListener("click", () => {
+    if (!confirm("Test 5K chrono : 5 km A FOND apres 10-15 min d'echauffement facile. Ce resultat recalibre toutes tes allures. Pret ?")) return;
+    const z = s.running.plan ? s.running.plan.zones : null;
+    renderRunLive({ kind: "test", km: 5, paceTarget: z ? z.intervalle : null,
+      desc: "5 km au maximum de ce que tu peux TENIR sur la distance. Allure reguliere, pas de sprint de depart." });
+  });
 
   // sync manuel
   document.getElementById("run-sync")?.addEventListener("click", async () => {
