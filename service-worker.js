@@ -1,5 +1,5 @@
 // K-Arise - service worker : cache l'app pour un fonctionnement hors-ligne
-const CACHE = "karise-v10";
+const CACHE = "karise-v11";
 const ASSETS = [
   "./index.html",
   "./css/style.css",

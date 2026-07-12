@@ -23,6 +23,13 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
+/* Liens : jamais le bleu fonce / violet natifs (illisibles sur fond sombre) */
+a { color: var(--cyan-soft); }
+a:visited { color: var(--cyan-soft); }
+
+/* Mode "images cachees" (toggle oeil dans la barre du haut) : allege l'interface */
+body.no-images .exo-figure, body.no-images .sp-figure { display: none !important; }
+
 html, body {
   background: var(--bg);
   color: var(--text);
@@ -144,9 +151,9 @@ select option { background: var(--panel-solid); }
 .exo .exo-cues.show { display: block; }
 .exo .exo-cues li { margin-left: 16px; margin-bottom: 2px; }
 .exo .exo-safety { margin-top: 6px; color: var(--orange); }
-.exo .exo-links { display: flex; gap: 8px; margin-top: 8px; }
-.exo a.vid { font-size: 11px; color: var(--cyan); text-decoration: none; border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
-.exo a.vid:hover { background: rgba(70, 212, 255, 0.1); }
+.exo-links { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+a.vid { font-size: 11px; color: var(--cyan); text-decoration: none; border: 1px solid var(--line); border-radius: 4px; padding: 5px 9px; }
+a.vid:hover, a.vid:visited { color: var(--cyan); background: rgba(70, 212, 255, 0.1); }
 .exo .toggle-cues { font-size: 11px; color: var(--text-dim); cursor: pointer; background: none; border: none; font-family: var(--mono); padding: 4px 0; }
 .exo-figure { margin: 8px 0 0; }
 .exo-figure img { display: block; width: 100%; max-height: 180px; object-fit: contain; border: 1px solid var(--line); border-radius: 4px; background: var(--track); }

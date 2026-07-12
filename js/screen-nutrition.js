@@ -134,6 +134,13 @@ export function renderNutrition() {
 
     document.getElementById("nu-eat")?.addEventListener("click", () => toast("Bon appetit. Recuperation optimale enclenchee."));
     document.getElementById("nu-next")?.addEventListener("click", () => { excluded.push(main.recipe.id); selected = null; refreshRecipe(); });
+    // Achat des ingredients manquants : liste copiee + supermarches autour de la position de l'appareil
+    document.getElementById("nu-shop")?.addEventListener("click", async () => {
+      const items = main.missing.map(ingredientLabel).join(", ");
+      try { await navigator.clipboard.writeText("Courses K-Arise : " + items); toast("Liste copiee : " + items, 3500); }
+      catch (e) { toast("A acheter : " + items, 4000); }
+      window.open("https://www.google.com/maps/search/supermarch%C3%A9", "_blank", "noopener");
+    });
     document.querySelectorAll("#recipe-list [data-rid]").forEach(row =>
       row.addEventListener("click", () => {
         selected = row.dataset.rid;
@@ -149,7 +156,8 @@ export function renderNutrition() {
       return `<span class="chip ${miss ? "" : "on"}" style="cursor:default">${miss ? '<i class="ti ti-x"></i> ' : ""}${esc(ingredientLabel(i))}</span>`;
     }).join("");
     const missWarn = item.makeable ? "" :
-      `<div class="hint orange mt8"><i class="ti ti-alert-triangle"></i> Il te manque : ${item.missing.map(m => esc(ingredientLabel(m))).join(", ")}.</div>`;
+      `<div class="hint orange mt8"><i class="ti ti-alert-triangle"></i> Il te manque : ${item.missing.map(m => esc(ingredientLabel(m))).join(", ")}.</div>
+       <button class="btn ghost mt8" id="nu-shop"><i class="ti ti-shopping-cart"></i> SUPERMARCHE PROCHE + COPIER LA LISTE</button>`;
     const subs = item.subs.length
       ? `<div class="hint mt8"><i class="ti ti-arrows-exchange"></i> Avec ce que tu as : ${item.subs.map(su => `${esc(ingredientLabel(su.missing))} &rarr; <span class="green">${esc(ingredientLabel(su.replaceWith))}</span>`).join(", ")}</div>`
       : "";
@@ -169,6 +177,7 @@ export function renderNutrition() {
         ${metricCard("Gluc.", r.carbs, "g")}
         ${metricCard("Lip.", r.fat, "g")}
       </div>
+      <div class="hint mb8"><i class="ti ti-user-check"></i> Couvre ~${Math.min(300, Math.round((r.protein / Math.max(1, needs.post.protein)) * 100))}% de ta dose proteines post-effort (calculee sur ton profil${s.history[0] ? " + ta derniere seance" : ""}).</div>
       <div class="faint" style="font-size:10px;letter-spacing:1px;margin-bottom:6px">INGREDIENTS</div>
       <div class="chips">${ings}</div>
       ${missWarn}${subs}

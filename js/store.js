@@ -32,7 +32,7 @@ const DEFAULT_STATE = {
   exoState: {},         // progression par exo : id -> {reps, work, weight, prReps, prWork, prWeight, lastRpe}
   titles: [],           // titres debloques (ids)
   activeSession: null,  // seance en cours (mise en pause) : { session, index, savedAt }
-  settings: { sound: true, vibration: true, autoBackup: true }, // chrono + sauvegarde auto hebdo
+  settings: { sound: true, vibration: true, autoBackup: true, showImages: true }, // chrono + backup + visuels
   stats: { force: 5, mobilite: 5, endurance: 5, core: 5, discipline: 5 },
   xp: 0,
   energy: 100,          // 0-100, recuperation simulee

@@ -1,5 +1,5 @@
 // K-Arise - primitives d'UI partagees (helpers de rendu communs a tous les ecrans)
-import { setSaveErrorHandler } from "./store.js";
+import { setSaveErrorHandler, getSettings, setSetting } from "./store.js";
 
 export const app = () => document.getElementById("app");
 export const esc = s => (s == null ? "" : String(s)).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -53,18 +53,30 @@ export function navTo(hash) {
   else location.hash = target;
 }
 
-// Barre superieure : titre + retour (history.back, repli sur le statut)
+// Applique la preference "images visibles" (classe globale lue par le CSS)
+export function applyImageVisibility() {
+  document.body.classList.toggle("no-images", getSettings().showImages === false);
+}
+
+// Barre superieure : retour + titre + toggle images (oeil)
 export function setHeader(title, showBack) {
   let h = document.getElementById("topbar");
   if (!h) { h = document.createElement("div"); h.id = "topbar"; document.body.insertBefore(h, document.body.firstChild); }
   h.className = "topbar";
   h.style.display = "flex";
+  applyImageVisibility();
+  const imgOn = getSettings().showImages !== false;
   h.innerHTML = `
     ${showBack ? '<button class="tb-btn" id="tb-back" aria-label="Retour"><i class="ti ti-chevron-left"></i></button>' : '<span class="tb-btn" style="visibility:hidden"></span>'}
     <span class="tb-title">${esc(title)}</span>
-    <span class="tb-btn" style="visibility:hidden"></span>`;
+    <button class="tb-btn" id="tb-img" aria-label="Afficher ou cacher les images" title="Images"><i class="ti ${imgOn ? "ti-photo" : "ti-photo-off"}"></i></button>`;
   if (showBack) document.getElementById("tb-back").addEventListener("click", () => {
     if (history.length > 1) history.back(); else go("#status");
+  });
+  document.getElementById("tb-img").addEventListener("click", () => {
+    setSetting("showImages", getSettings().showImages === false); // toggle
+    applyImageVisibility();
+    document.querySelector("#tb-img i").className = "ti " + (getSettings().showImages !== false ? "ti-photo" : "ti-photo-off");
   });
 }
 
